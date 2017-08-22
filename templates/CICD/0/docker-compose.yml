@@ -1,0 +1,39 @@
+version: '2'
+services:
+  core:
+    image: registry.cn-hangzhou.aliyuncs.com/logan/core
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
+  ui:
+    image: registry.cn-hangzhou.aliyuncs.com/logan/ui
+    stdin_open: true
+    tty: true
+    labels:
+      io.rancher.container.pull_image: always
+  lb:
+    image: rancher/lb-service-haproxy:v0.4.6
+    ports:
+    - 9090:9090/tcp
+    labels:
+      io.rancher.container.agent.role: environmentAdmin
+      io.rancher.container.create_agent: 'true'
+  jenkins:
+    image: registry.cn-hangzhou.aliyuncs.com/logan/jenkins:latest
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - /usr/bin/docker:/usr/bin/docker
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: test
+      MYSQL_ROOT_PASSWORD: my-secret-pw
+    stdin_open: true
+    tty: true
+    command:
+    - mysqld
+    - --character-set-server=utf8mb4
+    - --collation-server=utf8mb4_unicode_ci
+    labels:
+      io.rancher.container.pull_image: always
